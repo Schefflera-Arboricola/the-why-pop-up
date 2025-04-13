@@ -1,0 +1,14 @@
+{
+    "manifest_version": 3,
+    "name": "Overlay Input Logger",
+    "version": "0.1",
+    "description": "Shows an overlay with input on given websites(like Instagram, etc.) and saves responses with date and time.",
+    "permissions": ["scripting"],
+    "content_scripts": [
+      {
+        "matches": ["*://www.instagram.com/*", "*://www.youtube.com/*"],
+        "js": ["content.js"],
+        "run_at": "document_idle"
+      }
+    ]
+  }
