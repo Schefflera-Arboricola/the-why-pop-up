@@ -25,6 +25,8 @@ input.style.height = '200px';
 input.style.marginBottom = '30px';
 input.style.borderRadius = '6px';
 input.style.border = 'none';
+input.style.backgroundColor = 'white';
+input.style.color = 'black';
 
 // Submit button
 const submitBtn = document.createElement('button');
@@ -35,6 +37,7 @@ submitBtn.style.marginBottom = '12px';
 submitBtn.style.borderRadius = '6px';
 submitBtn.style.border = 'none';
 submitBtn.style.cursor = 'pointer';
+submitBtn.style.backgroundColor = 'grey';
 
 // Export button
 const exportBtn = document.createElement('button');
@@ -44,6 +47,7 @@ exportBtn.style.fontSize = '16px';
 exportBtn.style.borderRadius = '6px';
 exportBtn.style.border = 'none';
 exportBtn.style.cursor = 'pointer';
+exportBtn.style.backgroundColor = 'grey';
 
 // Save log
 function logInput(value) {
