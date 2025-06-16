@@ -4,7 +4,9 @@
 
 ![demo img](/assets/demo.png)
 
-The `Export Logs` button lets you download a `.csv` file with all the previous inputs (or logs) you have submitted with date and time of each log.
+Once you submit the response a clock starts on the upper-righthand side corner.
+
+The `Export Logs` button lets you download a `.csv` file with all the previous inputs (or logs) you have submitted with date, start time and time spent for each log.
 
 ## Usage: Brave
 
