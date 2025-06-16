@@ -49,21 +49,61 @@ exportBtn.style.border = 'none';
 exportBtn.style.cursor = 'pointer';
 exportBtn.style.backgroundColor = 'grey';
 
+// Timer element
+const timer = document.createElement('div');
+timer.style.position = 'fixed';
+timer.style.top = '10px';
+timer.style.right = '10px';
+timer.style.padding = '10px 20px';
+timer.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+timer.style.color = 'white';
+timer.style.fontSize = '20px';
+timer.style.borderRadius = '8px';
+timer.style.zIndex = '10000';
+timer.style.display = 'none'; // hidden initially
+
+// Track time
+let startTime = null;
+let intervalId = null;
+
+function startTimer() {
+  startTime = Date.now();
+  timer.style.display = 'block';
+  document.body.appendChild(timer);
+
+  intervalId = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const seconds = String(elapsed % 60).padStart(2, '0');
+    timer.textContent = `${minutes}:${seconds}`;
+  }, 1000);
+}
+
+function stopTimerAndLogTime(value) {
+  if (!startTime) return;
+  clearInterval(intervalId);
+  const totalSeconds = Math.floor((Date.now() - startTime) / 1000);
+  const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+  const seconds = String(totalSeconds % 60).padStart(2, '0');
+  const timeSpent = `${minutes}:${seconds}`;
+  logInput(value, timeSpent);
+}
+
 // Save log
-function logInput(value) {
+function logInput(value, timeSpent = "00:00") {
   const now = new Date();
   const date = now.toLocaleDateString();
   const time = now.toLocaleTimeString();
   const logs = JSON.parse(localStorage.getItem('input_logs') || '[]');
-  logs.push({ date, time, value });
+  logs.push({ date, time, value, timeSpent });
   localStorage.setItem('input_logs', JSON.stringify(logs));
 }
 
 // Export CSV
 function exportCSV() {
   const logs = JSON.parse(localStorage.getItem('input_logs') || '[]');
-  const csv = "date,time,value\n" + logs.map(row =>
-    `${row.date},${row.time},"${row.value}"`
+  const csv = "date,time,value,time_spent\n" + logs.map(row =>
+    `${row.date},${row.time},"${row.value}",${row.timeSpent || '00:00'}`
   ).join("\n");
 
   const blob = new Blob([csv], { type: "text/csv" });
@@ -78,8 +118,11 @@ function exportCSV() {
 // Handlers
 submitBtn.onclick = () => {
   if (input.value.trim() !== "") {
-    logInput(input.value);
+    startTimer();
     document.body.removeChild(overlay);
+    window.addEventListener('beforeunload', () => {
+      stopTimerAndLogTime(input.value);
+    });
   }
 };
 
