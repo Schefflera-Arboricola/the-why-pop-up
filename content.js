@@ -14,10 +14,19 @@ overlay.style.justifyContent = 'center';
 overlay.style.color = '#fff';
 overlay.style.fontFamily = 'sans-serif';
 
+// Title text
+const title = document.createElement('div');
+title.textContent = 'Why are you here?';
+title.style.color = 'white';
+title.style.fontSize = '36px';
+title.style.fontWeight = 'bold';
+title.style.marginBottom = '20px';
+title.style.textAlign = 'center';
+
 // Input field
 const input = document.createElement('input');
 input.type = 'text';
-input.placeholder = 'Why are you here?';
+input.placeholder = '';
 input.style.padding = '12px';
 input.style.fontSize = '20px';
 input.style.width = '800px';
@@ -28,7 +37,7 @@ input.style.border = 'none';
 input.style.backgroundColor = 'white';
 input.style.color = 'black';
 
-// Submit button
+// Submit button (LOCKED INITIALLY)
 const submitBtn = document.createElement('button');
 submitBtn.textContent = 'Submit';
 submitBtn.style.padding = '10px 20px';
@@ -36,8 +45,13 @@ submitBtn.style.fontSize = '16px';
 submitBtn.style.marginBottom = '12px';
 submitBtn.style.borderRadius = '6px';
 submitBtn.style.border = 'none';
-submitBtn.style.cursor = 'pointer';
 submitBtn.style.backgroundColor = 'grey';
+
+// HARD LOCK
+submitBtn.disabled = true;
+submitBtn.style.opacity = '0.5';
+submitBtn.style.cursor = 'not-allowed';
+submitBtn.style.pointerEvents = 'none';
 
 // Export button
 const exportBtn = document.createElement('button');
@@ -89,6 +103,30 @@ function stopTimerAndLogTime(value) {
   logInput(value, timeSpent);
 }
 
+// Enable submit AFTER 3 MINUTES
+const ENABLE_DELAY_MS = 3 * 60 * 1000; // 3 minutes
+
+function enableSubmitAfterDelay() {
+  let remaining = ENABLE_DELAY_MS / 1000;
+  submitBtn.textContent = `Submit (${remaining}s)`;
+
+  const countdown = setInterval(() => {
+    remaining--;
+    submitBtn.textContent = `Submit (${remaining}s)`;
+
+    if (remaining <= 0) {
+      clearInterval(countdown);
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit';
+      submitBtn.style.opacity = '1';
+      submitBtn.style.cursor = 'pointer';
+      submitBtn.style.backgroundColor = 'white';
+      submitBtn.style.pointerEvents = 'auto';
+    }
+  }, 1000);
+}
+
 // Save log
 function logInput(value, timeSpent = "00:00") {
   const now = new Date();
@@ -103,7 +141,7 @@ function logInput(value, timeSpent = "00:00") {
 function exportCSV() {
   const logs = JSON.parse(localStorage.getItem('input_logs') || '[]');
   const csv = "date,time,value,time_spent\n" + logs.map(row =>
-    `${row.date},${row.time},"${row.value}",${row.timeSpent || '00:00'}`
+        `${row.date},${row.time},"${row.value}",${row.timeSpent || '00:00'}`
   ).join("\n");
 
   const blob = new Blob([csv], { type: "text/csv" });
@@ -116,22 +154,31 @@ function exportCSV() {
 }
 
 // Handlers
-submitBtn.onclick = () => {
-  if (input.value.trim() !== "") {
-    startTimer();
-    document.body.removeChild(overlay);
-    window.addEventListener('beforeunload', () => {
-      stopTimerAndLogTime(input.value);
-    });
+submitBtn.addEventListener('click', (e) => {
+  // ABSOLUTE BLOCK
+  if (submitBtn.disabled) {
+    e.preventDefault();
+    e.stopPropagation();
+    return;
   }
-};
+
+  if (input.value.trim() === "") return;
+
+  startTimer();
+  document.body.removeChild(overlay);
+  window.addEventListener('beforeunload', () => {
+    stopTimerAndLogTime(input.value);
+  });
+});
 
 exportBtn.onclick = exportCSV;
 
-// Add everything to the overlay
+// Build overlay
+overlay.appendChild(title);
 overlay.appendChild(input);
 overlay.appendChild(submitBtn);
 overlay.appendChild(exportBtn);
-
-// Add overlay to page
 document.body.appendChild(overlay);
+
+// Start 3-minute lock timer
+enableSubmitAfterDelay();
