@@ -2,11 +2,15 @@
 
 <i> <b>Purpose</b> : To add a moment of pause -- before you start doom scrolling :) </i>
 
-![demo img](/assets/demo.png)
+The `Submit` button enables after 3-mins:
+
+![demo1 img](/assets/demo1.png)
 
 Once you submit the response a clock starts on the upper-righthand side corner.
 
-The `Export Logs` button lets you download a `.csv` file with all the previous inputs (or logs) you have submitted with date, start time and time spent for each log.
+![demo2 img](/assets/demo2.png)
+
+The `Export Logs` button (just below the "Submit") lets you download a `.csv` file with all the previous inputs (or logs) you have submitted with date, start time and time spent for each log.
 
 ## Usage: Brave
 
