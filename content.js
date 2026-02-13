@@ -1,3 +1,8 @@
+const RELOAD_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
+if (Date.now() - (parseInt(localStorage.getItem('lastSubmitTime') || 0) < RELOAD_INTERVAL_MS)) {
+  document.body.style.overflow = 'hidden';
+}
+
 // Create overlay container
 const overlay = document.createElement('div');
 overlay.style.position = 'fixed';
@@ -104,10 +109,10 @@ function stopTimerAndLogTime(value) {
 }
 
 // Enable submit AFTER 3 MINUTES
-const ENABLE_DELAY_MS = 3 * 60 * 1000; // 3 minutes
+const ENABLE_SUBMIT_MS = 3 * 60 * 1000; // 3 minutes
 
 function enableSubmitAfterDelay() {
-  let remaining = ENABLE_DELAY_MS / 1000;
+  let remaining = ENABLE_SUBMIT_MS / 1000;
   submitBtn.textContent = `Submit (${remaining}s)`;
 
   const countdown = setInterval(() => {
@@ -164,11 +169,18 @@ submitBtn.addEventListener('click', (e) => {
 
   if (input.value.trim() === "") return;
 
+  localStorage.setItem('lastSubmitTime', Date.now());
+  
   startTimer();
   document.body.removeChild(overlay);
   window.addEventListener('beforeunload', () => {
     stopTimerAndLogTime(input.value);
   });
+
+  setTimeout(() => {
+    document.body.style.overflow = '';
+    window.location.reload();
+  }, RELOAD_INTERVAL_MS);
 });
 
 exportBtn.onclick = exportCSV;
